@@ -2,34 +2,32 @@
 
 namespace App\Http\Controllers;
 
+use App\Balance;
 use App\Budget;
 use App\Http\Requests\BudgetStoreRequest;
 use App\Http\Requests\BudgetUpdateRequest;
+use App\Transaction;
 use ErrorException;
+use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class BudgetController extends Controller {
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
      * @return Collection
      */
-    public function index(Request $request) {
-        $budgets = Budget::query();
-
-        if ($request->has('start_date')) {
-            $budgets->where('start_date', '>=', $request->get('start_date'));
-        }
-
-        if ($request->has('end_date')) {
-            $budgets->where('end_date', '>=', $request->get('end_date'));
-        }
-
-        return $budgets->get();
+    public function index() {
+        return QueryBuilder::for(Budget::class)
+            ->allowedFilters([AllowedFilter::exact('category_id'), AllowedFilter::scope('planned_between')])
+            ->allowedSorts(['start_date', 'end_date', 'amount'])
+            ->allowedAppends(['status'])
+            ->get();
     }
 
     /**
@@ -39,7 +37,9 @@ class BudgetController extends Controller {
      * @return Budget
      */
     public function store(BudgetStoreRequest $request) {
-        return Budget::create($request->validated());
+        $budget = Budget::create($request->validated());
+        $budget->load('category');
+        return $budget;
     }
 
     /**
@@ -65,7 +65,28 @@ class BudgetController extends Controller {
             throw new ErrorException();
         }
 
-        return $budget;
+        return $budget->load('category');
+    }
+
+    /**
+     * Add a transaction to complete the specified budget.
+     *
+     * @param Request $request
+     * @param Budget $budget
+     * @return Transaction
+     * @throws Exception
+     */
+    public function setPaid(Request $request, Budget $budget) {
+        if ($budget->category->flexible) {
+            throw new Exception(__('This category is not flexible'));
+        }
+        if ($budget->cashFlow()->count() === 0) {
+            throw new Exception(__('No default cash flow specified'));
+        }
+        $balance = Balance::findOrFail($request->input('balance_id'));
+        /** @var Transaction $transaction */
+        $transaction = $balance->transactions()->create(['category_id' => $budget->category_id, 'cash_flow_id' => $budget->cash_flow_id, 'amount' => -1 * $budget->amount]);
+        return $transaction;
     }
 
     /**

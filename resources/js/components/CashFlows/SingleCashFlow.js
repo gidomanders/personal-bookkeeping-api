@@ -1,26 +1,25 @@
 import React, {Component} from 'react'
 import axios from 'axios'
-import CategoriesList from '../Categories/CategoriesList'
 import Loading from '../Loading'
 import Error from '../Error'
 
-class SingleBalance extends Component {
+class SingleCashFlow extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            balance: undefined,
+            cashFlow: undefined,
             error: '',
             loading: true
         }
     }
 
     componentDidMount() {
-        const balanceId = this.props.match.params.id
+        const cashFlowId = this.props.match.params.id
         this.setState({loading: true})
 
-        axios.get(`/api/balances/${balanceId}`).then(response => {
+        axios.get(`/api/cashFlows/${cashFlowId}`).then(response => {
             this.setState({
-                balance: response.data,
+                cashFlow: response.data,
                 loading: false,
                 error: false
             })
@@ -34,7 +33,7 @@ class SingleBalance extends Component {
     }
 
     render() {
-        const {balance, loading, error} = this.state
+        const {cashFlow, loading, error} = this.state
         let content
         if (loading) {
             content = (
@@ -48,19 +47,20 @@ class SingleBalance extends Component {
             content = (
                 <div className='card'>
                     <div className='card-header'>
-                        {new Intl.DateTimeFormat().format(new Date(balance.start_date))}
-                        -
-                        {new Intl.DateTimeFormat().format(new Date(balance.end_date))}
+                        {cashFlow.name}
                     </div>
                     <div className='card-body'>
-                        <CategoriesList balance={balance}/>
+                        <div className='d-flex justify-content-between'>
+                            <span>Status</span>
+                            <span>{cashFlow.status}</span>
+                        </div>
                     </div>
                 </div>
             )
         }
 
         return (
-            <div className='c-single-balance container py-4'>
+            <div className='c-single-cash-flow container py-4'>
                 <div className='row justify-content-center'>
                     <div className='col-md-8'>
                         {content}
@@ -71,4 +71,4 @@ class SingleBalance extends Component {
     }
 }
 
-export default SingleBalance
+export default SingleCashFlow

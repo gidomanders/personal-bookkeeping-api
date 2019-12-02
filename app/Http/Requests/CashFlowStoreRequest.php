@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class BudgetStoreRequest extends FormRequest {
+class CashFlowStoreRequest extends FormRequest {
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -21,9 +21,8 @@ class BudgetStoreRequest extends FormRequest {
      */
     public function rules() {
         return [
-            'category_id' => 'required|exists:categories,id',
-            'cash_flow_id' => 'nullable|exists:cash_flows,id',
-            'amount' => 'numeric'
+            'name' => 'required|string',
+            'status' => 'required|numeric'
         ];
     }
 }

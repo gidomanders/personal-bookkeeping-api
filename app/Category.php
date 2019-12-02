@@ -14,18 +14,18 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $category_id
  * @property string $name
  * @property int $order
- * @property bool $variable
+ * @property bool $flexible
  * @property Category $parent_category
- * @property Category[]|Collection $child_categories
+ * @property Category[]|Collection $childCategories
  * @property Transaction[]|Collection $transactions
  * @property Budget[]|Collection $budgets
  */
 class Category extends Model {
     use SoftDeletes;
 
-    protected $fillable = ['category_id', 'name', 'order', 'variable'];
-
-    public $status_budget = 0;
+    protected $fillable = ['category_id', 'name', 'order', 'flexible'];
+    protected $casts = ['flexible' => 'boolean'];
+    protected $appends = ['hasChildCategories'];
 
     public function parentCategory() {
         return $this->belongsTo(Category::class);
@@ -41,5 +41,9 @@ class Category extends Model {
 
     public function budgets() {
         return $this->hasMany(Budget::class);
+    }
+
+    public function getHasChildCategoriesAttribute() {
+        return $this->childCategories()->count() > 0;
     }
 }

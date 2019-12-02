@@ -16,7 +16,7 @@ class CreateCategoriesTable extends Migration {
             $table->unsignedBigInteger('category_id')->nullable();
             $table->string('name');
             $table->unsignedInteger('order');
-            $table->boolean('variable')->default(false);
+            $table->boolean('flexible')->default(false);
             $table->timestamps();
             $table->softDeletes();
 

@@ -13,8 +13,8 @@ class CreateBalancesTable extends Migration {
     public function up() {
         Schema::create('balances', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->date('start_date');
-            $table->date('end_date');
+            $table->timestamp('start_date');
+            $table->timestamp('end_date');
             $table->timestamps();
 
             $table->unique(['start_date', 'end_date']);

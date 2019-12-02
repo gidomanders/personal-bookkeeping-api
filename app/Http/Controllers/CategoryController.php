@@ -8,16 +8,30 @@ use App\Http\Requests\CategoryUpdateRequest;
 use ErrorException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class CategoryController extends Controller {
     /**
      * Display a listing of the resource.
      *
+     * @param Request $request
      * @return Collection
      */
-    public function index() {
-        return Category::whereNull('category_id')->with('child_categories')->orderBy('order', 'asc')->get();
+    public function index(Request $request) {
+        $query = QueryBuilder::for(Category::class)
+            ->allowedFilters([AllowedFilter::exact('category_id'), 'flexible'])
+            ->allowedSorts(['order', 'flexible'])
+            ->defaultSort('order')
+            ->allowedAppends(['has_child_categories']);
+
+        if (!$request->has('filter.category_id')) {
+            $query->whereNull('category_id');
+        }
+
+        return $query->get();
     }
 
     /**

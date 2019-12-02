@@ -21,8 +21,10 @@ class CategoryStoreRequest extends FormRequest {
      */
     public function rules() {
         return [
-            'name' => 'min:2',
-            'category_id' => 'nullable|exists:categories,id'
+            'name' => 'required|min:2',
+            'category_id' => 'nullable|exists:categories,id',
+            'order' => 'required|numeric|min:0',
+            'flexible' => 'boolean'
         ];
     }
 }

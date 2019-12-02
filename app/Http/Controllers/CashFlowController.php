@@ -2,46 +2,44 @@
 
 namespace App\Http\Controllers;
 
-use App\Balance;
-use App\Http\Requests\BalanceStoreRequest;
+use App\CashFlow;
+use App\Http\Requests\CashFlowStoreRequest;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Response;
 use Spatie\QueryBuilder\QueryBuilder;
 
-class BalanceController extends Controller {
+class CashFlowController extends Controller {
     /**
      * Display a listing of the resource.
      *
      * @return Collection
      */
     public function index() {
-        return QueryBuilder::for(Balance::class)
-            ->allowedFilters(['start_date', 'end_date'])
-            ->allowedSorts(['start_date', 'end_date'])
-            ->allowedAppends(['status'])
+        return QueryBuilder::for(CashFlow::class)
+            ->allowedFilters(['name'])
+            ->allowedSorts(['name', 'status'])
             ->get();
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param BalanceStoreRequest $request
-     * @return Balance
+     * @param CashFlowStoreRequest $request
+     * @return CashFlow
      */
-    public function store(BalanceStoreRequest $request) {
-        return Balance::create($request->validated());
+    public function store(CashFlowStoreRequest $request) {
+        return CashFlow::create($request->validated());
     }
 
     /**
      * Display the specified resource.
      *
-     * @param Balance $balance
-     * @return Balance
+     * @param CashFlow $cashFlow
+     * @return CashFlow
      */
-    public function show(Balance $balance) {
-        $balance->load('transactions');
-        return $balance;
+    public function show(CashFlow $cashFlow) {
+        return $cashFlow;
     }
 
     /**
@@ -51,7 +49,7 @@ class BalanceController extends Controller {
      * @return Response
      */
     public function destroy($id) {
-        if (!Balance::destroy($id)) {
+        if (!CashFlow::destroy($id)) {
             throw new ModelNotFoundException();
         }
 

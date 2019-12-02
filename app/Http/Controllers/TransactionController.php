@@ -9,6 +9,8 @@ use ErrorException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Response;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class TransactionController extends Controller {
     /**
@@ -17,7 +19,10 @@ class TransactionController extends Controller {
      * @return Collection
      */
     public function index() {
-        return Transaction::all();
+        return QueryBuilder::for(Transaction::class)
+            ->allowedFilters([AllowedFilter::exact('category_id'), AllowedFilter::exact('balance_id'), AllowedFilter::scope('appliedBetween'), 'amount'])
+            ->allowedSorts(['date', 'amount'])
+            ->get();
     }
 
     /**

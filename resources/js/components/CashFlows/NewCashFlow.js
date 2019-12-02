@@ -1,18 +1,17 @@
 import React, {Component} from 'react'
 import axios from 'axios'
 
-class NewBalance extends Component {
+class NewCashFlow extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            start_date: '',
-            end_date: '',
-            description: '',
+            name: '',
+            status: 0,
             errors: [],
             loading: false
         }
         this.handleFieldChange = this.handleFieldChange.bind(this)
-        this.handleCreateNewBalance = this.handleCreateNewBalance.bind(this)
+        this.handleCreateNewCashFlow = this.handleCreateNewCashFlow.bind(this)
         this.hasErrorFor = this.hasErrorFor.bind(this)
         this.renderErrorFor = this.renderErrorFor.bind(this)
     }
@@ -23,26 +22,27 @@ class NewBalance extends Component {
         })
     }
 
-    handleCreateNewBalance(event) {
+    handleCreateNewCashFlow(event) {
         event.preventDefault()
+        this.setState({loading: true})
 
         const {history} = this.props
 
-        const balance = {
-            start_date: this.state.start_date,
-            end_date: this.state.end_date
+        const cashFlow = {
+            name: this.state.name,
+            status: this.state.status
         }
 
-        axios.post('/api/balances', balance)
+        axios.post('/api/cash-flows', cashFlow)
             .then(response => {
-                history.push('/balances')
+                history.push('/cash-flows')
+            }).catch(error => {
+            console.error('error: ', error)
+            this.setState({
+                errors: error.response.data.errors,
+                loading: false
             })
-            .catch(error => {
-                this.setState({
-                    errors: error.response.data.errors,
-                    loading: false
-                })
-            })
+        })
     }
 
     hasErrorFor(field) {
@@ -53,8 +53,8 @@ class NewBalance extends Component {
         if (this.hasErrorFor(field)) {
             return (
                 <span className='invalid-feedback'>
-              <strong>{this.state.errors[field][0]}</strong>
-            </span>
+                    <strong>{this.state.errors[field][0]}</strong>
+                </span>
             )
         }
     }
@@ -63,38 +63,38 @@ class NewBalance extends Component {
         const {loading} = this.state
 
         return (
-            <div className='c-new-balance container py-4'>
+            <div className='c-new-cash-flow container py-4'>
                 <div className='row justify-content-center'>
                     <div className='col-md-6'>
                         <div className='card'>
-                            <div className='card-header'>Create new balance</div>
+                            <div className='card-header'>Create new cash flow</div>
                             <div className='card-body'>
-                                <form onSubmit={this.handleCreateNewBalance}>
+                                <form onSubmit={this.handleCreateNewCashFlow}>
                                     <div className='form-group'>
-                                        <label htmlFor='start_date'>Start date</label>
+                                        <label htmlFor='name'>Name</label>
                                         <input
-                                            id='start_date'
-                                            type='date'
-                                            className={`form-control ${this.hasErrorFor('start_date') ? 'is-invalid' : ''}`}
-                                            name='start_date'
-                                            value={this.state.start_date}
+                                            id='name'
+                                            type='text'
+                                            className={`form-control ${this.hasErrorFor('name') ? 'is-invalid' : ''}`}
+                                            name='name'
+                                            value={this.state.name}
                                             onChange={this.handleFieldChange}
                                             disabled={loading}
                                         />
-                                        {this.renderErrorFor('start_date')}
+                                        {this.renderErrorFor('name')}
                                     </div>
                                     <div className='form-group'>
-                                        <label htmlFor='end_date'>End date</label>
+                                        <label htmlFor='status'>Status</label>
                                         <input
-                                            id='end_date'
-                                            type='date'
-                                            className={`form-control ${this.hasErrorFor('end_date') ? 'is-invalid' : ''}`}
-                                            name='end_date'
-                                            value={this.state.end_date}
+                                            id='status'
+                                            type='text'
+                                            className={`form-control ${this.hasErrorFor('status') ? 'is-invalid' : ''}`}
+                                            name='status'
+                                            value={this.state.status}
                                             onChange={this.handleFieldChange}
                                             disabled={loading}
                                         />
-                                        {this.renderErrorFor('end_date')}
+                                        {this.renderErrorFor('status')}
                                     </div>
                                     <button className='btn btn-primary' disabled={loading}>Create</button>
                                 </form>
@@ -107,4 +107,4 @@ class NewBalance extends Component {
     }
 }
 
-export default NewBalance
+export default NewCashFlow

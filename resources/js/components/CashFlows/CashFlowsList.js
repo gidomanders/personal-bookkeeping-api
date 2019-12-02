@@ -1,24 +1,24 @@
 import React, {Component} from 'react'
 import axios from 'axios'
 import {Link} from 'react-router-dom'
+import CashFlow from './CashFlow'
 import Loading from '../Loading'
 import Error from '../Error'
-import Balance from './Balance'
 
-class BalancesList extends Component {
+class CashFlowsList extends Component {
     constructor() {
         super()
         this.state = {
-            balances: [],
+            cashFlows: [],
             error: '',
             loading: true
         }
     }
 
     loadData() {
-        return axios.get('/api/balances').then(response => {
+        return axios.get('/api/cash-flows').then(response => {
             this.setState({
-                balances: response.data,
+                cashFlows: response.data,
                 loading: false,
                 error: false
             })
@@ -36,7 +36,7 @@ class BalancesList extends Component {
     }
 
     render() {
-        const {balances, loading, error} = this.state
+        const {cashFlows, loading, error} = this.state
         let content
         if (loading) {
             content = (
@@ -48,14 +48,14 @@ class BalancesList extends Component {
             )
         } else {
             content = (
-                <div className='c-balances-list__content'>
-                    <Link className='btn btn-primary btn-sm mb-3' to='/balances/new'>
-                        Create new balance
+                <div className='c-cash-flows-list__content'>
+                    <Link className='btn btn-primary btn-sm mb-3' to='/cash-flows/new'>
+                        Create new cash flow
                     </Link>
-                    {balances &&
+                    {cashFlows &&
                     <ul className='list-group list-group-flush'>
-                        {balances.map(balance => (
-                            <Balance balance={balance} key={balance.id}/>
+                        {cashFlows.map(cashFlow => (
+                            <CashFlow cashFlow={cashFlow} key={cashFlow.id}/>
                         ))}
                     </ul>
                     }
@@ -64,11 +64,11 @@ class BalancesList extends Component {
         }
 
         return (
-            <div className='c-balances-list container py-4'>
+            <div className='c-cash-flows-list container py-4'>
                 <div className='row justify-content-center'>
                     <div className='col-md-8'>
                         <div className='card'>
-                            <div className='card-header'>All balances</div>
+                            <div className='card-header'>All cash flows</div>
                             <div className='card-body'>
                                 {content}
                             </div>
@@ -80,4 +80,4 @@ class BalancesList extends Component {
     }
 }
 
-export default BalancesList
+export default CashFlowsList

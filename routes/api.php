@@ -13,7 +13,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::resource('balance', 'BalanceController')->except(['update']);
+Route::resource('balances', 'BalanceController')->except(['update']);
 Route::resource('categories', 'CategoryController');
-Route::resource('budget', 'BudgetController');
+Route::resource('cash-flows', 'CashFlowController');
+Route::resource('budgets', 'BudgetController');
+Route::post('/budgets/{budget}/paid', 'BudgetController@setPaid');
 Route::resource('transactions', 'TransactionController');

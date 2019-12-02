@@ -21,11 +21,10 @@ class BudgetUpdateRequest extends FormRequest {
      */
     public function rules() {
         return [
-            'category_id' => 'exists:categories,id',
-            'start_date' => 'date',
-            'end_date' => 'date|after:start_date',
-            'amount' => 'nullable|numeric',
-            'variable' => 'boolean'
+            'category_id' => 'required|exists:categories,id',
+            'cash_flow_id' => 'nullable|exists:cash_flows,id',
+            'end_date' => 'date|after:' . $this->route('budget')->start_date,
+            'amount' => 'numeric'
         ];
     }
 }

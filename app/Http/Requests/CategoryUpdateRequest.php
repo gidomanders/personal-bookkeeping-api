@@ -26,7 +26,8 @@ class CategoryUpdateRequest extends FormRequest
         return [
             'name' => 'string|min:2',
             'category_id' => 'nullable|exists:categories,id|different:id',
-            'order' => 'min:0'
+            'order' => 'min:0',
+            'flexible' => 'boolean'
         ];
     }
 }

@@ -14,10 +14,12 @@ use Illuminate\Support\Carbon;
  * @property Carbon start_date
  * @property Carbon end_date
  * @property Transaction[]|Collection $transactions
+ * @method Balance findOrFail(int $id)
  */
 class Balance extends Model {
     protected $fillable = ['start_date', 'end_date'];
     protected $casts = ['start_date' => 'date', 'end_date' => 'date'];
+    protected $appends = ['status'];
 
     public $status = 0;
 
@@ -25,8 +27,8 @@ class Balance extends Model {
         return $this->hasMany(Transaction::class);
     }
 
-    public function calculateStatus() {
-        $this->status = Category::where('variable', false)->get()->mapToGroups(function (Category $category) {
+    public function getStatusAttribute() {
+        return Category::where('variable', false)->get()->mapToGroups(function (Category $category) {
             $budget = $category->budgets()->where(function ($query) {
                 $query->where('start_date', '>=', $this->start_date);
                 $query->where('end_date', '<=', $this->end_date);
@@ -37,9 +39,9 @@ class Balance extends Model {
                 $query->where('date', '<=', $this->end_date);
             })->sum('amount');
 
-            return [$category->variable => $budget - $transactions];
-        })->map(function ($value) {
-            return array_sum($value);
+            return [$category->flexible => $budget - $transactions];
+        })->map(function (Collection $value) {
+            return $value->sum();
         });
     }
 }
